@@ -1,0 +1,1390 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TowardsOffer - DSA Practice Sheet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #172033;
+        --muted: #667085;
+        --line: #e6eaf0;
+        --surface: #ffffff;
+        --soft: #f6f8fb;
+        --brand: #2563eb;
+        --brand-dark: #1d4ed8;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        margin-right: 20%;
+        margin-left: 20%;
+        overflow-x: hidden;
+        color: var(--ink);
+        background:
+          linear-gradient(
+            180deg,
+            rgba(246, 248, 251, 0.96),
+            rgba(255, 255, 255, 0.96) 34rem
+          ),
+          #fff;
+        font-family:
+          "Nunito Sans",
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        letter-spacing: 0;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family:
+          "Poppins",
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      button,
+      input,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .shell {
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        border-bottom: 1px solid rgba(230, 234, 240, 0.9);
+        background: rgba(255, 255, 255, 0.86);
+        backdrop-filter: blur(18px);
+      }
+
+      .brand-mark {
+        width: 2.25rem;
+        height: 2.25rem;
+        display: grid;
+        place-items: center;
+        border-radius: 0.65rem;
+        color: #fff;
+        background: #172033;
+        box-shadow: 0 10px 24px rgba(23, 32, 51, 0.16);
+      }
+
+      .layout {
+        width: min(1480px, 100%);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 18rem minmax(0, 1fr);
+        min-width: 0;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 4.55rem;
+        height: calc(100vh - 4.55rem);
+        padding: 1.25rem 1rem 1.75rem;
+        overflow-y: auto;
+        border-right: 1px solid var(--line);
+      }
+
+      .main-pane {
+        min-width: 0;
+        width: 100%;
+        padding: 2rem clamp(1rem, 3vw, 2.5rem) 3rem;
+      }
+
+      .topic-select {
+        display: none;
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 0.7rem;
+        background: #fff;
+        padding: 0.75rem 0.9rem;
+        color: var(--ink);
+        font-weight: 650;
+        outline: none;
+      }
+
+      .subtopic-select {
+        display: none;
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 0.7rem;
+        background: #fff;
+        padding: 0.75rem 0.9rem;
+        color: var(--ink);
+        font-weight: 700;
+        outline: none;
+      }
+
+      .sidebar-item {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.35rem;
+        padding: 0.7rem 0.75rem;
+        border: 1px solid transparent;
+        border-radius: 0.65rem;
+        color: #475467;
+        cursor: pointer;
+        transition:
+          border-color 0.16s ease,
+          background 0.16s ease,
+          color 0.16s ease;
+      }
+
+      .sidebar-item:hover {
+        color: var(--ink);
+        background: #fff;
+        border-color: var(--line);
+      }
+
+      .sidebar-item.active {
+        color: var(--brand);
+        background: #fff;
+        border-color: rgba(37, 99, 235, 0.18);
+        box-shadow: 0 10px 22px rgba(23, 32, 51, 0.06);
+      }
+
+      .sidebar-count {
+        flex: 0 0 auto;
+        min-width: 1.8rem;
+        border-radius: 999px;
+        background: var(--soft);
+        padding: 0.15rem 0.45rem;
+        color: #667085;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .sidebar-item.active .sidebar-count {
+        color: var(--brand);
+        background: #eff6ff;
+      }
+
+      .sidebar-group {
+        margin-bottom: 0.35rem;
+      }
+
+      .subtopic-nav {
+        margin: 0.2rem 0 0.65rem 0.75rem;
+        padding-left: 0.75rem;
+        border-left: 1px solid var(--line);
+      }
+
+      .subtopic-item {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6rem;
+        margin: 0.1rem 0;
+        padding: 0.48rem 0.55rem;
+        border: 1px solid transparent;
+        border-radius: 0.55rem;
+        background: transparent;
+        color: #667085;
+        cursor: pointer;
+        text-align: left;
+        transition:
+          background 0.16s ease,
+          border-color 0.16s ease,
+          color 0.16s ease;
+      }
+
+      .subtopic-item:hover {
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.78);
+        border-color: var(--line);
+      }
+
+      .subtopic-item.active {
+        color: var(--brand);
+        background: #eff6ff;
+        border-color: rgba(37, 99, 235, 0.18);
+      }
+
+      .subtopic-count {
+        flex: 0 0 auto;
+        color: #98a2b3;
+        font-size: 0.68rem;
+        font-weight: 800;
+      }
+
+      .metric-card {
+        border: 1px solid var(--line);
+        border-radius: 0.8rem;
+        background: rgba(255, 255, 255, 0.74);
+        padding: 0.95rem 1rem;
+      }
+
+      /* Oval donut styles for progress */
+      .donut-card {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .oval-donut {
+        width: 100%;
+        height: 76px;
+        border-radius: 999px;
+        position: relative;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+      }
+
+      .oval-donut-inner {
+        width: 46%;
+        height: 56px;
+        border-radius: 999px;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        box-shadow: 0 6px 18px rgba(23, 32, 51, 0.06);
+      }
+
+      .oval-donut-inner strong {
+        font-size: 1.1rem;
+        display: block;
+      }
+
+      .oval-donut-inner span {
+        font-size: 0.72rem;
+        color: var(--muted);
+        text-transform: lowercase;
+      }
+
+      .donut-stats {
+        display: flex;
+        gap: 0.8rem;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        color: #475467;
+      }
+
+      .progress-track {
+        height: 0.5rem;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #e9edf3;
+      }
+
+      #progress-bar {
+        height: 100%;
+        width: 0%;
+        border-radius: inherit;
+        background: var(--brand);
+        transition: width 0.35s ease;
+      }
+
+      .section-card {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 0.8rem;
+        background: var(--surface);
+        box-shadow: 0 18px 44px rgba(23, 32, 51, 0.05);
+        min-width: 0;
+      }
+
+      .accordion-header {
+        cursor: pointer;
+        transition:
+          background 0.16s ease,
+          color 0.16s ease;
+      }
+
+      .accordion-header:hover {
+        background: #f8fafc;
+      }
+
+      .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.28s ease;
+      }
+
+      .accordion-content.open {
+        max-height: 12000px;
+      }
+
+      .rotate-icon,
+      .problem-toggle-icon {
+        transition: transform 0.18s ease;
+      }
+
+      .rotate-icon.rotated {
+        transform: rotate(90deg);
+      }
+
+      .problem-toggle-icon.rotated {
+        transform: rotate(180deg);
+      }
+
+      .icon-button {
+        width: 2.1rem;
+        height: 2.1rem;
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+        border: 1px solid var(--line);
+        border-radius: 0.6rem;
+        color: #667085;
+        background: #fff;
+        transition:
+          border-color 0.16s ease,
+          color 0.16s ease,
+          background 0.16s ease;
+      }
+
+      .icon-button:hover {
+        color: var(--brand);
+        border-color: rgba(37, 99, 235, 0.24);
+        background: #eff6ff;
+      }
+
+      .problem-checkbox {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 1.18rem;
+        height: 1.18rem;
+        flex: 0 0 auto;
+        position: relative;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 0.35rem;
+        cursor: pointer;
+        background: #fff;
+        transition:
+          border-color 0.16s ease,
+          background 0.16s ease,
+          box-shadow 0.16s ease;
+      }
+
+      .problem-checkbox:hover {
+        border-color: var(--brand);
+      }
+
+      .problem-checkbox:checked {
+        border-color: var(--brand);
+        background: var(--brand);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.11);
+      }
+
+      .problem-checkbox:checked::after {
+        content: "";
+        position: absolute;
+        top: 0.17rem;
+        left: 0.38rem;
+        width: 0.32rem;
+        height: 0.62rem;
+        border: 2px solid #fff;
+        border-top: 0;
+        border-left: 0;
+        transform: rotate(45deg);
+      }
+
+      .problem-row {
+        border-top: 1px solid var(--line);
+        min-width: 0;
+      }
+
+      .problem-row:first-child {
+        border-top: 0;
+      }
+
+      .problem-row.completed .problem-name {
+        color: #98a2b3;
+        text-decoration: line-through;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 1.6rem;
+        white-space: nowrap;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        padding: 0.25rem 0.62rem;
+        font-size: 0.72rem;
+        font-weight: 750;
+        line-height: 1;
+      }
+
+      .lpa-entry {
+        color: #027a48;
+        background: #ecfdf3;
+        border-color: #abefc6;
+      }
+
+      .lpa-mid {
+        color: #b54708;
+        background: #fffaeb;
+        border-color: #fedf89;
+      }
+
+      .lpa-senior {
+        color: #6941c6;
+        background: #f4f3ff;
+        border-color: #d9d6fe;
+      }
+
+      .priority-high,
+      .diff-hard {
+        color: #b42318;
+        background: #fef3f2;
+        border-color: #fecdca;
+      }
+
+      .priority-medium,
+      .diff-medium {
+        color: #b54708;
+        background: #fffaeb;
+        border-color: #fedf89;
+      }
+
+      .priority-low {
+        color: #175cd3;
+        background: #eff8ff;
+        border-color: #b2ddff;
+      }
+
+      .diff-easy {
+        color: #027a48;
+        background: #ecfdf3;
+        border-color: #abefc6;
+      }
+
+      .tag-chip {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        padding: 0.3rem 0.65rem;
+        color: #475467;
+        font-size: 0.74rem;
+        font-weight: 700;
+      }
+
+      .followup-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        border: 1px solid rgba(37, 99, 235, 0.2);
+        border-radius: 999px;
+        background: #fff;
+        padding: 0.45rem 0.75rem;
+        color: var(--brand);
+        font-size: 0.78rem;
+        font-weight: 750;
+        cursor: pointer;
+        transition:
+          background 0.16s ease,
+          border-color 0.16s ease;
+      }
+
+      .followup-chip:hover {
+        background: #eff6ff;
+        border-color: rgba(37, 99, 235, 0.36);
+      }
+
+      .practice-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 2rem;
+        border-radius: 0.6rem;
+        background: var(--ink);
+        padding: 0.45rem 0.8rem;
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 750;
+        text-decoration: none;
+        transition:
+          background 0.16s ease,
+          transform 0.16s ease;
+      }
+
+      .practice-link:hover {
+        background: var(--brand-dark);
+      }
+
+      .practice-disabled {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 2rem;
+        border-radius: 0.6rem;
+        background: #f2f4f7;
+        padding: 0.45rem 0.8rem;
+        color: #98a2b3;
+        font-size: 0.78rem;
+        font-weight: 750;
+      }
+
+      .content-panel {
+        border: 1px solid var(--line);
+        border-radius: 0.8rem;
+        background: #fff;
+        padding: 1rem;
+      }
+
+      .content-panel.info {
+        background: #f8fbff;
+        border-color: #dbeafe;
+      }
+
+      .content-panel.warning {
+        background: #fffaf0;
+        border-color: #fdecc8;
+      }
+
+      .content-panel.danger {
+        background: #fff8f7;
+        border-color: #fee4e2;
+      }
+
+      .code-block {
+        overflow-x: auto;
+        border-radius: 0.75rem;
+        background: #111827;
+        padding: 1rem;
+        color: #e5e7eb;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 0.82rem;
+        line-height: 1.65;
+        white-space: pre;
+      }
+
+      .comparison-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 0.8rem;
+        background: #fff;
+        font-size: 0.875rem;
+      }
+
+      .comparison-table th {
+        background: #f8fafc;
+        color: #475467;
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-align: left;
+        text-transform: uppercase;
+      }
+
+      .comparison-table th,
+      .comparison-table td {
+        border-bottom: 1px solid var(--line);
+        padding: 0.8rem 0.9rem;
+      }
+
+      .comparison-table tr:last-child td {
+        border-bottom: 0;
+      }
+
+      @media (max-width: 1023px) {
+        .topbar,
+        .topbar-inner,
+        .layout,
+        .main-pane {
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+        }
+
+        .layout {
+          display: block;
+        }
+
+        .sidebar {
+          display: none;
+        }
+
+        .topic-select {
+          display: block;
+        }
+
+        .subtopic-select {
+          display: block;
+        }
+
+        .main-pane {
+          padding-top: 1rem;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .main-pane > *,
+        .section-card,
+        .section-card > *,
+        .problem-row,
+        .problem-row > *,
+        .topic-select {
+          max-width: 100%;
+          min-width: 0;
+        }
+
+        .topbar-inner {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .metric-card {
+          padding: 0.8rem;
+        }
+
+        .problem-name,
+        .tag-chip,
+        .followup-chip {
+          overflow-wrap: anywhere;
+        }
+
+        .problem-action {
+          width: 100%;
+        }
+
+        .practice-link,
+        .practice-disabled {
+          width: 100%;
+        }
+
+        .comparison-wrap {
+          overflow-x: auto;
+        }
+
+        .comparison-table {
+          min-width: 620px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div
+          class="topbar-inner mx-auto flex w-full max-w-[1480px] items-center justify-between gap-4 px-4 py-4 sm:px-6"
+        >
+          <div class="flex min-w-0 items-center gap-3">
+            <div class="brand-mark" aria-hidden="true">
+              <svg
+                class="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.6"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                />
+              </svg>
+            </div>
+            <div class="min-w-0">
+              <h1
+                class="truncate text-lg font-extrabold tracking-normal text-slate-950 sm:text-xl"
+              >
+                TowardsOffer
+              </h1>
+              <p class="text-xs font-semibold text-slate-500 sm:text-sm">
+                Minimal DSA practice sheet
+              </p>
+            </div>
+          </div>
+          <div
+            class="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-500 shadow-sm sm:flex"
+          >
+            <span id="header-progress">0% complete</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="mb-5 px-2">
+            <p
+              class="text-xs font-extrabold uppercase tracking-[0.18em] text-slate-400"
+            >
+              Topics
+            </p>
+          </div>
+          <nav id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-pane" id="main-content">
+          <div
+            class="flex min-h-[16rem] items-center justify-center text-sm font-bold text-slate-400"
+          >
+            Loading problems...
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      const lpaLabel = { entry: "<6 LPA", mid: "<15 LPA", senior: "<20 LPA+" };
+      const lpaClass = {
+        entry: "lpa-entry",
+        mid: "lpa-mid",
+        senior: "lpa-senior",
+      };
+      const priorityClass = {
+        High: "priority-high",
+        Medium: "priority-medium",
+        Low: "priority-low",
+      };
+      const diffClass = {
+        Easy: "diff-easy",
+        Medium: "diff-medium",
+        Hard: "diff-hard",
+      };
+      const STORAGE_KEY = "towardsoffer_dsa_v2";
+
+      let dsaData = null;
+      let problemIndex = {};
+      let currentOpenSubtopic = null;
+      let currentOpenProblem = null;
+      let currentTopic = null;
+
+      function loadState() {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        } catch {
+          return {};
+        }
+      }
+
+      function saveState(state) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      async function loadProblems() {
+        try {
+          const res = await fetch("problems.json");
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          dsaData = await res.json();
+          buildProblemIndex();
+          renderSidebar();
+          selectTopic(Object.keys(dsaData)[0]);
+        } catch (e) {
+          document.getElementById("main-content").innerHTML =
+            `<div class="rounded-xl border border-red-200 bg-red-50 p-6 font-bold text-red-700">Failed to load problems.json: ${e.message}<br>Make sure problems.json is in the same folder as index.html.</div>`;
+        }
+      }
+
+      function buildProblemIndex() {
+        problemIndex = {};
+        Object.keys(dsaData).forEach((topic) => {
+          Object.keys(dsaData[topic]).forEach((subtopic, sIdx) => {
+            const subtopicId = `subtopic-${sanitizeId(topic)}-${sIdx}`;
+            dsaData[topic][subtopic].problems.forEach((p, pIdx) => {
+              problemIndex[p.id] = {
+                topic,
+                subtopic,
+                subtopicId,
+                problemDomId: `problem-${subtopicId}-${pIdx}`,
+              };
+            });
+          });
+        });
+      }
+
+      function sanitizeId(str) {
+        return str.replace(/[^a-zA-Z0-9]/g, "_");
+      }
+
+      function renderSidebar() {
+        const nav = document.getElementById("sidebar-nav");
+        nav.innerHTML = "";
+        const activeTopic = currentTopic || Object.keys(dsaData)[0];
+        Object.keys(dsaData).forEach((topic, idx) => {
+          const group = document.createElement("div");
+          group.className = "sidebar-group";
+
+          const item = document.createElement("button");
+          item.type = "button";
+          item.className = `sidebar-item ${topic === activeTopic || (!currentTopic && idx === 0) ? "active" : ""}`;
+          item.dataset.topic = topic;
+          item.innerHTML = `<span class="truncate text-sm font-bold">${topic}</span><span class="sidebar-count">${getTotalProblems(dsaData[topic])}</span>`;
+          item.onclick = () => selectTopic(topic);
+          group.appendChild(item);
+
+          if (topic === activeTopic) {
+            const subtopicNav = document.createElement("div");
+            subtopicNav.className = "subtopic-nav";
+
+            Object.keys(dsaData[topic]).forEach((subtopicName, sIdx) => {
+              const subtopic = dsaData[topic][subtopicName];
+              const subtopicId = `subtopic-${sanitizeId(topic)}-${sIdx}`;
+              const subItem = document.createElement("button");
+              subItem.type = "button";
+              subItem.className = `subtopic-item ${currentOpenSubtopic === subtopicId ? "active" : ""}`;
+              subItem.dataset.subtopicId = subtopicId;
+              subItem.innerHTML = `
+                <span class="min-w-0 truncate text-xs font-extrabold">${subtopicName}</span>
+                <span class="subtopic-count">${subtopic.problems.length}</span>
+              `;
+              subItem.onclick = (event) => {
+                event.stopPropagation();
+                navigateToSubtopic(topic, subtopicId);
+              };
+              subtopicNav.appendChild(subItem);
+            });
+
+            group.appendChild(subtopicNav);
+          }
+
+          nav.appendChild(group);
+        });
+      }
+
+      function selectTopic(topic) {
+        currentTopic = topic;
+        document
+          .querySelectorAll(".sidebar-item")
+          .forEach((el) =>
+            el.classList.toggle("active", el.dataset.topic === topic),
+          );
+        currentOpenSubtopic = null;
+        currentOpenProblem = null;
+        renderTopicContent(topic);
+        renderSidebar();
+      }
+
+      function renderTopicContent(topicName) {
+        const main = document.getElementById("main-content");
+        const topicData = dsaData[topicName];
+        const state = loadState();
+        const totalProblems = getTotalProblems(topicData);
+        const completedProblems = getCompletedProblems(topicData, state);
+        const totalSubtopics = Object.keys(topicData).length;
+        const progress = totalProblems
+          ? Math.round((completedProblems / totalProblems) * 100)
+          : 0;
+
+        let html = `
+          <div class="mb-6 grid gap-3 lg:hidden">
+            <select class="topic-select" onchange="selectTopic(this.value)" aria-label="Select topic">
+              ${Object.keys(dsaData)
+                .map(
+                  (topic) =>
+                    `<option value="${escapeAttr(topic)}" ${topic === topicName ? "selected" : ""}>${topic}</option>`,
+                )
+                .join("")}
+            </select>
+            <select class="subtopic-select" onchange="navigateToSubtopic(currentTopic, this.value)" aria-label="Select subtopic">
+              <option value="">Select subtopic</option>
+              ${Object.keys(topicData)
+                .map((subtopicName, sIdx) => {
+                  const subtopicId = `subtopic-${sanitizeId(topicName)}-${sIdx}`;
+                  const subtopic = topicData[subtopicName];
+                  return `<option value="${escapeAttr(subtopicId)}">${subtopicName} (${subtopic.problems.length})</option>`;
+                })
+                .join("")}
+            </select>
+          </div>
+
+          <section class="mb-7">
+            <div class="mb-5 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+              <div class="max-w-3xl">
+                <p class="mb-2 text-xs font-extrabold uppercase tracking-[0.18em] text-blue-600">Current Topic</p>
+                <h2 class="text-3xl font-extrabold leading-tight tracking-normal text-slate-950 sm:text-4xl">${topicName}</h2>
+              </div>
+              <div class="grid min-w-[min(100%,28rem)] grid-cols-2 gap-3">
+                ${renderMetric("Problems", totalProblems, completedProblems)}
+                ${renderMetric("Done", completedProblems)}
+              </div>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div class="mb-3 flex items-center justify-between gap-3">
+                <span class="text-sm font-extrabold text-slate-800">Topic progress</span>
+                <span class="text-sm font-extrabold text-blue-600">${progress}%</span>
+              </div>
+              <div class="progress-track"><div id="progress-bar" style="width:${progress}%"></div></div>
+            </div>
+          </section>
+
+          <section class="space-y-4">
+        `;
+
+        Object.keys(topicData).forEach((subtopicName, sIdx) => {
+          const subtopic = topicData[subtopicName];
+          const subtopicId = `subtopic-${sanitizeId(topicName)}-${sIdx}`;
+          const subtopicCompleted = getCompletedProblems(
+            { [subtopicName]: subtopic },
+            state,
+          );
+
+          html += `
+            <article class="section-card">
+              <div class="accordion-header flex items-center justify-between gap-4 px-4 py-4 sm:px-5"
+                   onclick="toggleSubtopic('${subtopicId}')">
+                <div class="flex min-w-0 items-center gap-3">
+                  <span class="icon-button">
+                    <svg class="h-4 w-4 rotate-icon" id="icon-${subtopicId}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="m9 5 7 7-7 7"/>
+                    </svg>
+                  </span>
+                  <div class="min-w-0">
+                    <h3 class="truncate text-base font-extrabold text-slate-900 sm:text-lg">${subtopicName}</h3>
+                    <p class="mt-1 text-xs font-bold text-slate-500">${subtopicCompleted}/${subtopic.problems.length} completed</p>
+                  </div>
+                </div>
+                <span class="pill bg-slate-50 text-slate-600">${subtopic.problems.length} problems</span>
+              </div>
+              <div class="accordion-content" id="${subtopicId}">
+                <div class="border-t border-slate-200 bg-white">
+          `;
+
+          if (subtopic.learningAid) {
+            const la = subtopic.learningAid;
+            html += `
+              <div class="p-4 sm:p-5">
+                <div class="overflow-hidden rounded-xl border border-blue-100 bg-blue-50/50">
+                  <div class="accordion-header flex items-center gap-3 px-4 py-3"
+                       onclick="toggleLearningAid('learn-${subtopicId}')">
+                    <span class="grid h-8 w-8 place-items-center rounded-lg bg-white text-blue-600">
+                      <svg class="h-4 w-4 rotate-icon" id="icon-learn-${subtopicId}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="m9 5 7 7-7 7"/>
+                      </svg>
+                    </span>
+                    <h4 class="text-sm font-extrabold text-slate-900">Know the Algorithm - ${la.title}</h4>
+                  </div>
+                  <div class="accordion-content" id="learn-${subtopicId}">
+                    <div class="space-y-3 p-4 pt-0">
+                      <pre class="code-block">${escapeHtml(la.code)}</pre>
+                      <p class="text-sm font-medium leading-6 text-slate-600">${la.explanation}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+
+          html += `<div class="border-t border-slate-100">`;
+          subtopic.problems.forEach((problem, pIdx) => {
+            const problemId = `problem-${subtopicId}-${pIdx}`;
+            const isChecked = state[problem.id] || false;
+
+            html += `
+              <div class="problem-row ${isChecked ? "completed" : ""}" id="wrap-${problem.id}">
+                <div class="accordion-header px-4 py-3 sm:px-5" onclick="toggleProblem('${problemId}')">
+                  <div class="grid gap-3 lg:grid-cols-[auto_auto_minmax(14rem,1fr)_auto_auto] lg:items-center">
+                    <div class="flex items-center gap-3">
+                      <button type="button" class="icon-button" aria-label="Toggle problem details"
+                        onclick="event.stopPropagation();toggleProblem('${problemId}')">
+                        <svg id="icon-${problemId}" class="h-4 w-4 problem-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="m19 9-7 7-7-7"/>
+                        </svg>
+                      </button>
+                      <input type="checkbox" class="problem-checkbox" ${isChecked ? "checked" : ""}
+                        onclick="event.stopPropagation();toggleCheckbox('${problem.id}')"
+                        id="cb-${problem.id}" aria-label="Mark ${escapeAttr(problem.name)} as completed">
+                    </div>
+                    <span class="pill w-fit ${lpaClass[problem.lpa]}">${lpaLabel[problem.lpa]}</span>
+                    <div class="min-w-0">
+                      <p class="problem-name text-sm font-extrabold leading-6 text-slate-900">${problem.name}</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="pill ${priorityClass[problem.priority]}">${problem.priority}</span>
+                      <span class="pill ${diffClass[problem.difficulty]}">${problem.difficulty}</span>
+                    </div>
+                    <div class="problem-action">
+                      ${
+                        problem.link
+                          ? `<a href="${problem.link}" target="_blank" rel="noopener" class="practice-link" onclick="event.stopPropagation()">Practice</a>`
+                          : `<span class="practice-disabled">No link</span>`
+                      }
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-content" id="${problemId}">
+                  <div class="border-t border-slate-100 bg-slate-50 px-4 py-4 sm:px-5">
+                    ${
+                      problem.fullContent && problem.content
+                        ? renderProblemContent(problem.content)
+                        : `<p class="rounded-xl border border-slate-200 bg-white py-10 text-center text-sm font-extrabold text-slate-400">Coming soon</p>`
+                    }
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+
+          html += `</div></div></div></article>`;
+        });
+
+        html += `</section>`;
+        main.innerHTML = html;
+        updateHeaderProgress(progress);
+      }
+
+      function renderMetric(label, value) {
+        return `
+          <div class="metric-card">
+            <p class="text-[0.68rem] font-extrabold uppercase tracking-[0.15em] text-slate-400">${label}</p>
+            <p class="mt-1 text-2xl font-extrabold text-slate-950">${value}</p>
+          </div>
+        `;
+      }
+
+      function renderProblemContent(c) {
+        let html = `<div class="space-y-4">`;
+
+        if (c.tags && c.tags.length) {
+          html += `<div class="flex flex-wrap gap-2">`;
+          c.tags.forEach((t) => {
+            html += `<span class="tag-chip">${t}</span>`;
+          });
+          html += `</div>`;
+        }
+
+        if (c.problem_description) {
+          html += `
+            <div class="content-panel info">
+              <h4 class="mb-2 text-sm font-extrabold text-slate-900">Problem Description</h4>
+              <p class="text-sm font-medium leading-6 text-slate-600">${c.problem_description}</p>
+            </div>`;
+        }
+
+        if (c.approach_comparison) {
+          const ac = c.approach_comparison;
+          html += `
+            <div class="content-panel">
+              <h4 class="mb-3 text-sm font-extrabold text-slate-900">Approach Comparison</h4>
+              <div class="comparison-wrap">
+                <table class="comparison-table">
+                  <thead>
+                    <tr>
+                      <th>Approach</th>
+                      <th>Time Complexity</th>
+                      <th>Space Complexity</th>
+                    </tr>
+                  </thead>
+                  <tbody>`;
+          ac.approaches.forEach((app, i) => {
+            html += `<tr>
+              <td class="font-bold text-slate-800">${app}</td>
+              <td class="font-medium text-slate-600">${ac.time_complexity[i] || "-"}</td>
+              <td class="font-medium text-slate-600">${ac.space_complexity[i] || "-"}</td>
+            </tr>`;
+          });
+          html += `</tbody></table></div></div>`;
+        }
+
+        if (c.hints && c.hints.length) {
+          html += `
+            <div class="content-panel warning">
+              <h4 class="mb-3 text-sm font-extrabold text-slate-900">Hints</h4>
+              <div class="space-y-2">`;
+          c.hints.forEach((hint, i) => {
+            html += `
+              <details class="rounded-lg border border-amber-100 bg-white px-3 py-2">
+                <summary class="cursor-pointer text-sm font-extrabold text-amber-800">Hint ${i + 1}</summary>
+                <p class="mt-2 text-sm font-medium leading-6 text-slate-600">${hint}</p>
+              </details>`;
+          });
+          html += `</div></div>`;
+        }
+
+        if (c.common_mistakes && c.common_mistakes.length) {
+          html += `
+            <div class="content-panel danger">
+              <h4 class="mb-3 text-sm font-extrabold text-slate-900">Common Mistakes</h4>
+              <ul class="space-y-2 text-sm font-medium leading-6 text-slate-600">`;
+          c.common_mistakes.forEach((m) => {
+            html += `<li class="flex gap-2"><span class="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-red-400"></span><span>${m}</span></li>`;
+          });
+          html += `</ul></div>`;
+        }
+
+        if (c.follow_up_questions && c.follow_up_questions.length) {
+          html += `
+            <div class="content-panel">
+              <h4 class="mb-3 text-sm font-extrabold text-slate-900">Follow-up Questions</h4>
+              <div class="flex flex-wrap gap-2">`;
+          c.follow_up_questions.forEach((fqId) => {
+            const ref = problemIndex[fqId];
+            const label = ref ? findProblemName(fqId) : fqId;
+            html += `
+              <button class="followup-chip" onclick="navigateToProblem('${fqId}')">
+                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+                ${label}
+              </button>`;
+          });
+          html += `</div></div>`;
+        }
+
+        html += `</div>`;
+        return html;
+      }
+
+      function findProblemName(id) {
+        const ref = problemIndex[id];
+        if (!ref) return id;
+        const problems = dsaData[ref.topic][ref.subtopic].problems;
+        const p = problems.find((x) => x.id === id);
+        return p ? p.name : id;
+      }
+
+      function navigateToProblem(problemId) {
+        const ref = problemIndex[problemId];
+        if (!ref) return;
+
+        if (ref.topic !== currentTopic) {
+          selectTopic(ref.topic);
+        }
+
+        setTimeout(() => {
+          const subtopicEl = document.getElementById(ref.subtopicId);
+          const subtopicIcon = document.getElementById(
+            "icon-" + ref.subtopicId,
+          );
+          if (subtopicEl && !subtopicEl.classList.contains("open")) {
+            subtopicEl.classList.add("open");
+            if (subtopicIcon) subtopicIcon.classList.add("rotated");
+            currentOpenSubtopic = ref.subtopicId;
+          }
+
+          setTimeout(() => {
+            const problemEl = document.getElementById(ref.problemDomId);
+            const problemIcon = document.getElementById(
+              "icon-" + ref.problemDomId,
+            );
+
+            if (currentOpenProblem && currentOpenProblem !== ref.problemDomId) {
+              const prev = document.getElementById(currentOpenProblem);
+              const prevIcon = document.getElementById(
+                "icon-" + currentOpenProblem,
+              );
+              if (prev) prev.classList.remove("open");
+              if (prevIcon) prevIcon.classList.remove("rotated");
+            }
+
+            if (problemEl) {
+              problemEl.classList.add("open");
+              if (problemIcon) problemIcon.classList.add("rotated");
+              currentOpenProblem = ref.problemDomId;
+
+              const wrap = document.getElementById("wrap-" + problemId);
+              if (wrap) {
+                setTimeout(
+                  () =>
+                    wrap.scrollIntoView({ behavior: "smooth", block: "start" }),
+                  150,
+                );
+              }
+            }
+          }, 50);
+        }, 50);
+      }
+
+      function navigateToSubtopic(topic, subtopicId) {
+        if (!subtopicId) return;
+
+        if (topic !== currentTopic) {
+          selectTopic(topic);
+        }
+
+        setTimeout(() => {
+          openSubtopic(subtopicId);
+          const el = document.getElementById(subtopicId);
+          if (el) {
+            const section = el.closest(".section-card");
+            setTimeout(
+              () =>
+                (section || el).scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                }),
+              120,
+            );
+          }
+        }, 50);
+      }
+
+      function openSubtopic(id) {
+        const el = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!el) return;
+
+        if (currentOpenSubtopic && currentOpenSubtopic !== id) {
+          const prev = document.getElementById(currentOpenSubtopic);
+          const prevIcon = document.getElementById(
+            "icon-" + currentOpenSubtopic,
+          );
+          if (prev) prev.classList.remove("open");
+          if (prevIcon) prevIcon.classList.remove("rotated");
+        }
+
+        el.classList.add("open");
+        if (icon) icon.classList.add("rotated");
+        currentOpenSubtopic = id;
+        currentOpenProblem = null;
+        updateSidebarActiveState();
+      }
+
+      function updateSidebarActiveState() {
+        document
+          .querySelectorAll(".sidebar-item")
+          .forEach((el) =>
+            el.classList.toggle("active", el.dataset.topic === currentTopic),
+          );
+        document
+          .querySelectorAll(".subtopic-item")
+          .forEach((el) =>
+            el.classList.toggle(
+              "active",
+              el.dataset.subtopicId === currentOpenSubtopic,
+            ),
+          );
+      }
+
+      function toggleSubtopic(id) {
+        const el = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!el) return;
+
+        if (currentOpenSubtopic && currentOpenSubtopic !== id) {
+          const prev = document.getElementById(currentOpenSubtopic);
+          const prevIcon = document.getElementById(
+            "icon-" + currentOpenSubtopic,
+          );
+          if (prev) prev.classList.remove("open");
+          if (prevIcon) prevIcon.classList.remove("rotated");
+        }
+
+        const opening = !el.classList.contains("open");
+        el.classList.toggle("open");
+        if (icon) icon.classList.toggle("rotated");
+        currentOpenSubtopic = opening ? id : null;
+        currentOpenProblem = null;
+        updateSidebarActiveState();
+      }
+
+      function toggleLearningAid(id) {
+        const el = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!el) return;
+        el.classList.toggle("open");
+        if (icon) icon.classList.toggle("rotated");
+      }
+
+      function toggleProblem(id) {
+        const el = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!el) return;
+
+        if (currentOpenProblem && currentOpenProblem !== id) {
+          const prev = document.getElementById(currentOpenProblem);
+          const prevIcon = document.getElementById(
+            "icon-" + currentOpenProblem,
+          );
+          if (prev) prev.classList.remove("open");
+          if (prevIcon) prevIcon.classList.remove("rotated");
+        }
+
+        const opening = !el.classList.contains("open");
+        el.classList.toggle("open");
+        if (icon) icon.classList.toggle("rotated");
+        currentOpenProblem = opening ? id : null;
+      }
+
+      function toggleCheckbox(problemId) {
+        const state = loadState();
+        state[problemId] = !state[problemId];
+        saveState(state);
+
+        const row = document.getElementById("wrap-" + problemId);
+        if (row) row.classList.toggle("completed", state[problemId]);
+        if (currentTopic) renderTopicContent(currentTopic);
+      }
+
+      function getTotalProblems(topicData) {
+        return Object.values(topicData).reduce(
+          (sum, st) => sum + st.problems.length,
+          0,
+        );
+      }
+
+      function getCompletedProblems(topicData, state) {
+        return Object.values(topicData).reduce(
+          (sum, st) => sum + st.problems.filter((p) => state[p.id]).length,
+          0,
+        );
+      }
+
+      function updateHeaderProgress(progress) {
+        const el = document.getElementById("header-progress");
+        if (el) el.textContent = `you are${progress}% `;
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      function escapeAttr(str) {
+        return escapeHtml(str).replace(/"/g, "&quot;");
+      }
+
+      window.selectTopic = selectTopic;
+      window.toggleSubtopic = toggleSubtopic;
+      window.toggleLearningAid = toggleLearningAid;
+      window.toggleProblem = toggleProblem;
+      window.toggleCheckbox = toggleCheckbox;
+      window.navigateToProblem = navigateToProblem;
+      window.navigateToSubtopic = navigateToSubtopic;
+
+      loadProblems();
+    </script>
+  </body>
+</html>

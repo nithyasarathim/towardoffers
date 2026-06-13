@@ -1,0 +1,3021 @@
+{
+  "Arrays": {
+    "Prefix sum & Differential Array": {
+      "learningAid": {
+        "title": "Prefix Sum Algorithm",
+        "code": "vector<int> buildPrefixSum(vector<int>& nums) {\n    int n = nums.size();\n    vector<int> prefix(n + 1, 0);\n    for (int i = 0; i < n; i++) {\n        prefix[i + 1] = prefix[i] + nums[i];\n    }\n    return prefix;\n}\n\nint queryRange(vector<int>& prefix, int l, int r) {\n    return prefix[r + 1] - prefix[l];\n}",
+        "explanation": "By storing the cumulative sum of elements from the start up to each index, the sum of a specific range [l, r] can be found by taking the total sum up to r and subtracting the sum that occurred before l."
+      },
+      "problems": [
+        {
+          "id": "arr-01",
+          "name": "Range Sum Query - Immutable",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "https://leetcode.com/problems/range-sum-query-immutable/description/",
+          "fullContent": true,
+          "content": {
+            "tags": [
+              "Prefix Sum",
+              "Array",
+              "Design"
+            ],
+            "problem_description": "Given an integer array nums, handle multiple queries of the following type: Calculate the sum of the elements of nums between indices left and right inclusive where left <= right.",
+            "approach_comparison": {
+              "approaches": [
+                "Bruteforce",
+                "Better",
+                "Optimal"
+              ],
+              "time_complexity": [
+                "O(n) / query",
+                "O(1) / query",
+                "O(1) / query"
+              ],
+              "space_complexity": [
+                "O(1)",
+                "O(n)",
+                "O(n)"
+              ]
+            },
+            "hints": [
+              "Instead of calculating the sum for every query from scratch, can you reuse work done for previous indices?",
+              "Think about storing a running total (cumulative sum) so that you don't need to recompute sums repeatedly.",
+              "If you store prefix sums, you can get range sum using: sum(l, r) = prefix[r + 1] − prefix[l]"
+            ],
+            "common_mistakes": [
+              "Using prefix[r] - prefix[l] instead of prefix[r+1] - prefix[l]",
+              "Not creating n+1 size array → leads to messy edge cases",
+              "Breaks calculations when l = 0",
+              "Missing the whole point → ends up O(n) per query",
+              "Not being clear whether r is included or excluded"
+            ],
+            "follow_up_questions": [
+              "arr-03"
+            ]
+          }
+        },
+        {
+          "id": "arr-02",
+          "name": "Pascal's Triangle",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "https://leetcode.com/problems/pascals-triangle/",
+          "fullContent": true,
+          "content": {
+            "tags": [
+              "Array",
+              "Dynamic Programming"
+            ],
+            "problem_description": "Given an integer numRows, return the first numRows of Pascal's triangle. In Pascal's triangle, each number is the sum of the two numbers directly above it.",
+            "approach_comparison": {
+              "approaches": [
+                "Bruteforce",
+                "Optimal"
+              ],
+              "time_complexity": [
+                "O(n²)",
+                "O(n²)"
+              ],
+              "space_complexity": [
+                "O(n²)",
+                "O(n²)"
+              ]
+            },
+            "hints": [
+              "Each row starts and ends with 1.",
+              "Every element (except the edges) is the sum of the two elements in the row above it.",
+              "Build row by row, using the previous row to compute the current row."
+            ],
+            "common_mistakes": [
+              "Forgetting to add 1s at the start and end of each row",
+              "Off-by-one errors when indexing into the previous row",
+              "Not initializing the first row as [1]"
+            ],
+            "follow_up_questions": [
+              "arr-01"
+            ]
+          }
+        },
+        {
+          "id": "arr-03",
+          "name": "Largest Subarray with K Sum (Prefix Sum + Hashmap)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": true,
+          "content": {
+            "tags": [
+              "Prefix Sum",
+              "Hashmap",
+              "Array"
+            ],
+            "problem_description": "Given an array of integers and a target sum K, find the length of the longest subarray whose sum equals K.",
+            "approach_comparison": {
+              "approaches": [
+                "Bruteforce",
+                "Better (Prefix Sum + Hashmap)"
+              ],
+              "time_complexity": [
+                "O(n²)",
+                "O(n)"
+              ],
+              "space_complexity": [
+                "O(1)",
+                "O(n)"
+              ]
+            },
+            "hints": [
+              "Compute prefix sums as you traverse the array.",
+              "At each index, check if (prefix_sum - K) has been seen before.",
+              "Store the first occurrence index of each prefix sum in a hashmap."
+            ],
+            "common_mistakes": [
+              "Updating the hashmap before checking leads to wrong results",
+              "Not initializing hashmap with {0: -1} for subarrays starting at index 0",
+              "Confusing this with the subarray sum equals K count problem"
+            ],
+            "follow_up_questions": [
+              "arr-01",
+              "arr-04"
+            ]
+          }
+        },
+        {
+          "id": "arr-04",
+          "name": "Zero Array Transformation (Difference Array)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": true,
+          "content": {
+            "tags": [
+              "Difference Array",
+              "Array",
+              "Greedy"
+            ],
+            "problem_description": "Given an array nums and a list of queries [l, r, val], apply the operation: decrement all elements in the range [l, r] by val. Check if the array can be made all zeros.",
+            "approach_comparison": {
+              "approaches": [
+                "Bruteforce",
+                "Optimal (Difference Array)"
+              ],
+              "time_complexity": [
+                "O(n * q)",
+                "O(n + q)"
+              ],
+              "space_complexity": [
+                "O(1)",
+                "O(n)"
+              ]
+            },
+            "hints": [
+              "Instead of updating every element in a range, use a difference array to mark range starts and ends.",
+              "Build prefix sums of the difference array to get actual decrements at each position.",
+              "Check if each element can be decremented to 0 without going negative."
+            ],
+            "common_mistakes": [
+              "Off-by-one: difference array update at r+1 instead of r",
+              "Not reconstructing actual values via prefix sum before checking",
+              "Trying brute-force for large inputs — TLE guaranteed"
+            ],
+            "follow_up_questions": [
+              "arr-03"
+            ]
+          }
+        }
+      ]
+    },
+    "Two Pointers": {
+      "problems": [
+        {
+          "id": "arr-05",
+          "name": "Two Sum (Sorted variation)",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": true,
+          "content": {
+            "tags": [
+              "Two Pointers",
+              "Array",
+              "Sorting"
+            ],
+            "problem_description": "Given a 1-indexed sorted array of integers, find two numbers that add up to a specific target. Return their indices.",
+            "approach_comparison": {
+              "approaches": [
+                "Hashmap",
+                "Two Pointers"
+              ],
+              "time_complexity": [
+                "O(n)",
+                "O(n)"
+              ],
+              "space_complexity": [
+                "O(n)",
+                "O(1)"
+              ]
+            },
+            "hints": [
+              "Since the array is sorted, use two pointers — one at the start, one at the end.",
+              "If the sum is too large, move the right pointer left. If too small, move left pointer right.",
+              "The sorted property guarantees you won't miss valid pairs."
+            ],
+            "common_mistakes": [
+              "Using the same element twice",
+              "Not leveraging the sorted property (using hashmap wastes space)",
+              "Off-by-one on 1-indexed return values"
+            ],
+            "follow_up_questions": [
+              "arr-10",
+              "arr-11"
+            ]
+          }
+        },
+        {
+          "id": "arr-06",
+          "name": "Sort Colors (Dutch National Flag)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": true,
+          "content": {
+            "tags": [
+              "Two Pointers",
+              "Sorting",
+              "Array"
+            ],
+            "problem_description": "Given an array with values 0, 1, and 2 (representing red, white, and blue), sort them in-place so that all 0s come first, then 1s, then 2s.",
+            "approach_comparison": {
+              "approaches": [
+                "Counting Sort",
+                "Dutch National Flag (One Pass)"
+              ],
+              "time_complexity": [
+                "O(n)",
+                "O(n)"
+              ],
+              "space_complexity": [
+                "O(1)",
+                "O(1)"
+              ]
+            },
+            "hints": [
+              "Maintain three pointers: low, mid, and high.",
+              "Elements before low are 0s; between low and mid are 1s; after high are 2s.",
+              "Process elements at mid: swap with low if 0, keep if 1, swap with high if 2."
+            ],
+            "common_mistakes": [
+              "Incrementing mid after swapping with high — the swapped element is unprocessed",
+              "Not initializing pointers correctly",
+              "Using extra space when O(1) is required"
+            ],
+            "follow_up_questions": [
+              "arr-05"
+            ]
+          }
+        },
+        {
+          "id": "arr-07",
+          "name": "Merge Sorted Array",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "https://leetcode.com/problems/merge-sorted-array/",
+          "fullContent": true,
+          "content": {
+            "tags": [
+              "Two Pointers",
+              "Array",
+              "Sorting"
+            ],
+            "problem_description": "Given two sorted arrays nums1 and nums2, merge nums2 into nums1 in-place. nums1 has extra space at the end to accommodate nums2.",
+            "approach_comparison": {
+              "approaches": [
+                "Naive (sort after copy)",
+                "Two Pointers from End"
+              ],
+              "time_complexity": [
+                "O((m+n) log(m+n))",
+                "O(m+n)"
+              ],
+              "space_complexity": [
+                "O(1)",
+                "O(1)"
+              ]
+            },
+            "hints": [
+              "Start filling from the end of nums1 to avoid overwriting unprocessed elements.",
+              "Use three pointers: one at end of nums1's valid part (m-1), one at end of nums2 (n-1), one at the last position (m+n-1).",
+              "Always place the larger of the two current elements at the current end position."
+            ],
+            "common_mistakes": [
+              "Merging from the front overwrites elements you haven't processed yet",
+              "Forgetting to handle remaining elements in nums2 after nums1 is exhausted"
+            ],
+            "follow_up_questions": [
+              "arr-41"
+            ]
+          }
+        },
+        {
+          "id": "arr-08",
+          "name": "Remove Duplicates from Sorted Array",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "https://leetcode.com/problems/remove-duplicates-from-sorted-array/",
+          "fullContent": true,
+          "content": {
+            "tags": [
+              "Two Pointers",
+              "Array"
+            ],
+            "problem_description": "Given a sorted array, remove the duplicates in-place such that each unique element appears only once. Return the number of unique elements.",
+            "approach_comparison": {
+              "approaches": [
+                "Extra Space (Set)",
+                "Two Pointers In-Place"
+              ],
+              "time_complexity": [
+                "O(n)",
+                "O(n)"
+              ],
+              "space_complexity": [
+                "O(n)",
+                "O(1)"
+              ]
+            },
+            "hints": [
+              "Use a slow pointer to mark the position of the last unique element.",
+              "Use a fast pointer to scan through the array.",
+              "When fast pointer finds a new unique element, place it at the slow pointer position."
+            ],
+            "common_mistakes": [
+              "Returning count instead of the right k value",
+              "Not starting slow pointer at index 1 (first element is always unique)"
+            ],
+            "follow_up_questions": [
+              "arr-12"
+            ]
+          }
+        },
+        {
+          "id": "arr-09",
+          "name": "Max Consecutive Ones",
+          "priority": "Medium",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "https://leetcode.com/problems/max-consecutive-ones/",
+          "fullContent": true,
+          "content": {
+            "tags": [
+              "Array"
+            ],
+            "problem_description": "Given a binary array nums, return the maximum number of consecutive 1s in the array.",
+            "approach_comparison": {
+              "approaches": [
+                "Single Pass Counter"
+              ],
+              "time_complexity": [
+                "O(n)"
+              ],
+              "space_complexity": [
+                "O(1)"
+              ]
+            },
+            "hints": [
+              "Maintain a running count of consecutive 1s and a max count.",
+              "Reset running count to 0 when you encounter a 0.",
+              "Update max count at every step."
+            ],
+            "common_mistakes": [
+              "Forgetting to update the max before resetting the counter",
+              "Not checking the final count after the loop ends"
+            ],
+            "follow_up_questions": []
+          }
+        },
+        {
+          "id": "arr-10",
+          "name": "3Sum / 3Sum Closest",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/3sum/",
+          "fullContent": true,
+          "content": {
+            "tags": [
+              "Two Pointers",
+              "Array",
+              "Sorting"
+            ],
+            "problem_description": "Given an integer array nums, return all triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, j != k, and nums[i] + nums[j] + nums[k] == 0.",
+            "approach_comparison": {
+              "approaches": [
+                "Brute O(n³)",
+                "Sort + Two Pointers O(n²)"
+              ],
+              "time_complexity": [
+                "O(n³)",
+                "O(n²)"
+              ],
+              "space_complexity": [
+                "O(1)",
+                "O(1) ignoring output"
+              ]
+            },
+            "hints": [
+              "Sort the array first to enable two-pointer technique and easy duplicate skipping.",
+              "Fix one element i, then use two pointers (left = i+1, right = end) for the remaining.",
+              "Skip duplicate values of i, left, and right to avoid duplicate triplets."
+            ],
+            "common_mistakes": [
+              "Not skipping duplicates after finding a valid triplet",
+              "Not moving both left and right when a triplet is found",
+              "Using nested loops without the two-pointer trick (TLE)"
+            ],
+            "follow_up_questions": [
+              "arr-11"
+            ]
+          }
+        },
+        {
+          "id": "arr-11",
+          "name": "Four Sum",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/4sum/",
+          "fullContent": true,
+          "content": {
+            "tags": [
+              "Two Pointers",
+              "Array",
+              "Sorting"
+            ],
+            "problem_description": "Given an array nums and a target, return all unique quadruplets [nums[a], nums[b], nums[c], nums[d]] that sum to target.",
+            "approach_comparison": {
+              "approaches": [
+                "Brute O(n⁴)",
+                "Sort + Two Pointer O(n³)"
+              ],
+              "time_complexity": [
+                "O(n⁴)",
+                "O(n³)"
+              ],
+              "space_complexity": [
+                "O(1)",
+                "O(1) ignoring output"
+              ]
+            },
+            "hints": [
+              "Extend 3Sum: fix two elements with two loops, then use two pointers for the rest.",
+              "Sort first; skip duplicates at each of the two fixed positions.",
+              "Be careful with overflow for large targets — use long long."
+            ],
+            "common_mistakes": [
+              "Integer overflow when summing four large numbers",
+              "Duplicate skipping logic applied incorrectly",
+              "Forgetting to skip duplicates at both the outer and inner fixed loops"
+            ],
+            "follow_up_questions": [
+              "arr-10"
+            ]
+          }
+        },
+        {
+          "id": "arr-12",
+          "name": "Move Zeroes / Remove Duplicates",
+          "priority": "Medium",
+          "difficulty": "Easy",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": true,
+          "content": {
+            "tags": [
+              "Two Pointers",
+              "Array"
+            ],
+            "problem_description": "Given an integer array nums, move all 0's to the end of it while maintaining the relative order of non-zero elements.",
+            "approach_comparison": {
+              "approaches": [
+                "Extra Array",
+                "Two Pointers In-Place"
+              ],
+              "time_complexity": [
+                "O(n)",
+                "O(n)"
+              ],
+              "space_complexity": [
+                "O(n)",
+                "O(1)"
+              ]
+            },
+            "hints": [
+              "Use a slow pointer tracking where the next non-zero should go.",
+              "On each non-zero element, place it at the slow pointer and advance both.",
+              "Fill remaining positions from slow pointer to end with 0."
+            ],
+            "common_mistakes": [
+              "Swapping instead of overwriting (can work but adds unnecessary operations)",
+              "Not zeroing out the tail after placing non-zeros"
+            ],
+            "follow_up_questions": [
+              "arr-08"
+            ]
+          }
+        },
+        {
+          "id": "arr-13",
+          "name": "Trapping Rain Water",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "https://leetcode.com/problems/trapping-rain-water/",
+          "fullContent": true,
+          "content": {
+            "tags": [
+              "Two Pointers",
+              "Stack",
+              "Dynamic Programming"
+            ],
+            "problem_description": "Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.",
+            "approach_comparison": {
+              "approaches": [
+                "Brute O(n²)",
+                "Prefix/Suffix Arrays O(n)",
+                "Two Pointers O(n)"
+              ],
+              "time_complexity": [
+                "O(n²)",
+                "O(n)",
+                "O(n)"
+              ],
+              "space_complexity": [
+                "O(1)",
+                "O(n)",
+                "O(1)"
+              ]
+            },
+            "hints": [
+              "Water at any index is min(maxLeft, maxRight) - height[i].",
+              "Precompute max heights from left and right with prefix/suffix arrays.",
+              "Optimize to O(1) space: use two pointers moving inward; the smaller side determines water."
+            ],
+            "common_mistakes": [
+              "Not accounting for negative water (use max(0, ...)",
+              "Two-pointer: forgetting to update maxLeft/maxRight before computing water"
+            ],
+            "follow_up_questions": []
+          }
+        },
+        {
+          "id": "arr-14",
+          "name": "Reverse Pairs",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "https://leetcode.com/problems/reverse-pairs/",
+          "fullContent": true,
+          "content": {
+            "tags": [
+              "Divide and Conquer",
+              "Merge Sort",
+              "Array"
+            ],
+            "problem_description": "Given an integer array nums, return the number of reverse pairs. A reverse pair is a pair (i, j) where i < j and nums[i] > 2 * nums[j].",
+            "approach_comparison": {
+              "approaches": [
+                "Brute O(n²)",
+                "Merge Sort O(n log n)"
+              ],
+              "time_complexity": [
+                "O(n²)",
+                "O(n log n)"
+              ],
+              "space_complexity": [
+                "O(1)",
+                "O(n)"
+              ]
+            },
+            "hints": [
+              "Use a modified merge sort: count pairs across left and right halves before merging.",
+              "During the count phase, use two pointers across sorted halves.",
+              "The merge step then proceeds normally."
+            ],
+            "common_mistakes": [
+              "Counting pairs during merge instead of before merge (wrong results)",
+              "Confusing this with count of inversions (condition is > 2*j not > j)"
+            ],
+            "follow_up_questions": [
+              "arr-43"
+            ]
+          }
+        },
+        {
+          "id": "tp-01",
+          "name": "Container With Most Water",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tp-02",
+          "name": "Valid Palindrome",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Sliding Window": {
+      "problems": [
+        {
+          "id": "arr-15",
+          "name": "Find the Power of K-Size Subarrays I",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/find-the-power-of-k-size-subarrays-i/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-16",
+          "name": "Longest Substring Without Repeating Characters",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-17",
+          "name": "Minimum Size Subarray Sum",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/minimum-size-subarray-sum/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-18",
+          "name": "Shortest Subarray with Sum at Least K (Monotonic Queue)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-19",
+          "name": "Sliding Window Maximum",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "arr-20",
+          "name": "Subarrays with K Different Integers",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "arr-21",
+          "name": "Maximal Rectangle",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "sw-01",
+          "name": "Maximum Sum Subarray of Size K",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "sw-02",
+          "name": "First Negative in Every Window of Size K",
+          "priority": "Medium",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Intervals": {
+      "problems": [
+        {
+          "id": "arr-22",
+          "name": "Merge Overlapping Intervals",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/merge-intervals/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-23",
+          "name": "Insert Interval",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/insert-interval/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-24",
+          "name": "Interval List Intersections",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "https://leetcode.com/problems/interval-list-intersections/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-25",
+          "name": "Non-overlapping Intervals",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "https://leetcode.com/problems/non-overlapping-intervals/",
+          "fullContent": false
+        },
+        {
+          "id": "iv-01",
+          "name": "Meeting Rooms",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "iv-02",
+          "name": "Meeting Rooms II",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Matrix (2D Arrays)": {
+      "problems": [
+        {
+          "id": "arr-31",
+          "name": "Spiral Matrix",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "entry",
+          "link": "https://leetcode.com/problems/spiral-matrix/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-32",
+          "name": "Search in a 2D Matrix",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "entry",
+          "link": "https://leetcode.com/problems/search-a-2d-matrix/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-33",
+          "name": "Set Matrix Zeroes",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/set-matrix-zeroes/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-34",
+          "name": "Rotate Image / Matrix",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/rotate-image/",
+          "fullContent": false
+        }
+      ]
+    },
+    "Hashing & Frequency Tracking": {
+      "problems": [
+        {
+          "id": "arr-35",
+          "name": "Repeating & Missing Number (O(N) space)",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "https://www.geeksforgeeks.org/find-a-repeating-and-a-missing-number/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-36",
+          "name": "Find the Duplicate in an Array of N+1 Integers (Cycle Detection)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/find-the-duplicate-number/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-37",
+          "name": "Longest Consecutive Subsequence",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/longest-consecutive-sequence/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-38",
+          "name": "4Sum II",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "https://leetcode.com/problems/4sum-ii/",
+          "fullContent": false
+        }
+      ]
+    },
+    "Divide & Conquer / Sorting Variations": {
+      "problems": [
+        {
+          "id": "arr-39",
+          "name": "Next Permutation",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/next-permutation/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-40",
+          "name": "Kth Largest Element (Priority Queue/QuickSelect)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/kth-largest-element-in-an-array/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-41",
+          "name": "Merge Two Sorted Arrays Without Extra Space",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://www.geeksforgeeks.org/merge-two-sorted-arrays-o1-extra-space/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-42",
+          "name": "Sort a K-sorted Array",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://www.geeksforgeeks.org/nearly-sorted-algorithm/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-43",
+          "name": "Inversion of Array Count",
+          "priority": "Medium",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "https://www.geeksforgeeks.org/counting-inversions/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-44",
+          "name": "Median of Two Sorted Arrays",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "https://leetcode.com/problems/median-of-two-sorted-arrays/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-45",
+          "name": "Count of Smaller Numbers After Self",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "https://leetcode.com/problems/count-of-smaller-numbers-after-self/",
+          "fullContent": false
+        }
+      ]
+    },
+    "Advanced Array Problems": {
+      "problems": [
+        {
+          "id": "arr-46",
+          "name": "Pow(x, n) (Binary Exponentiation)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/powx-n/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-47",
+          "name": "Grid Unique Paths (DP)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/unique-paths/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-48",
+          "name": "Single-Threaded CPU (Priority Queue Simulation)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "https://leetcode.com/problems/single-threaded-cpu/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-49",
+          "name": "Sum of Subarray Minimums (Monotonic Stack)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "https://leetcode.com/problems/sum-of-subarray-minimums/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-50",
+          "name": "Count Unique Characters of All Substrings",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "https://leetcode.com/problems/count-unique-characters-of-all-substrings-of-a-given-string/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-51",
+          "name": "Closest Subsequence Sum (Meet-in-the-middle)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "https://leetcode.com/problems/closest-subsequence-sum/",
+          "fullContent": false
+        }
+      ]
+    },
+    "Greedy Algorithms": {
+      "problems": [
+        {
+          "id": "arr-26",
+          "name": "Best Time to Buy & Sell Stock",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-27",
+          "name": "Best Time to Buy and Sell Stock II",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-28",
+          "name": "Majority Element I",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/majority-element/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-29",
+          "name": "Majority Element II",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/majority-element-ii/",
+          "fullContent": false
+        },
+        {
+          "id": "arr-30",
+          "name": "Kadane's Algorithm (Maximum Subarray)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "https://leetcode.com/problems/maximum-subarray/",
+          "fullContent": false
+        },
+        {
+          "id": "ga-01",
+          "name": "Activity Selection",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ga-02",
+          "name": "Jump Game",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ga-03",
+          "name": "Jump Game II",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    }
+  },
+  "Strings": {
+    "Basic Traversal & Manipulation": {
+      "problems": [
+        {
+          "id": "str-01",
+          "name": "Valid Anagram (Frequency Hashing)",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "str-02",
+          "name": "Roman to Integer",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "str-03",
+          "name": "Longest Common Prefix",
+          "priority": "Medium",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "str-04",
+          "name": "Reverse Every Word in a String",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "str-05",
+          "name": "Implement STRSTR (Basic approach)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "str-06",
+          "name": "Count and Say (Simulation)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "String Matching & Hashing": {
+      "problems": [
+        {
+          "id": "str-07",
+          "name": "Rabin-Karp Algorithm (Rolling Hash)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "str-08",
+          "name": "Implement ATOI (Handling edge cases/overflow)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "str-09",
+          "name": "Compare Version Numbers",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "str-10",
+          "name": "KMP Algorithm / LPS Array (Linear pattern searching)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "str-11",
+          "name": "Z-Function (Advanced pattern matching)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Palindromes & Longest Substrings": {
+      "problems": [
+        {
+          "id": "str-12",
+          "name": "Longest Palindrome in a String (Expand from Center)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "str-13",
+          "name": "Minimum Insertions to Make String Palindrome (String + DP)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    }
+  },
+  "Linked List": {
+    "Basic Manipulation & Deletion": {
+      "problems": [
+        {
+          "id": "ll-01",
+          "name": "Middle of the Linked List (Fast/Slow Pointer)",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-02",
+          "name": "Delete Node in a Linked List (O(1) trick)",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-03",
+          "name": "Remove Duplicates from Sorted List II",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-04",
+          "name": "Merge Two Sorted Lists",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-05",
+          "name": "Delete the Middle Node of a Linked List",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-06",
+          "name": "Remove Nth Node From End of List",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-07",
+          "name": "Palindrome Linked List",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-08",
+          "name": "Swap Nodes in Pairs",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Fast & Slow Pointers (Cycle & Structure)": {
+      "problems": [
+        {
+          "id": "ll-09",
+          "name": "Linked List Cycle (Tortoise and Hare)",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-10",
+          "name": "Linked List Cycle II (Finding the entry point)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-11",
+          "name": "Palindrome Linked List (Reverse second half + Compare)",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-12",
+          "name": "Find the Winner of the Circular Game (Josephus Problem)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Advanced Pointer Logic & Sorting": {
+      "problems": [
+        {
+          "id": "ll-13",
+          "name": "Odd Even Linked List",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-14",
+          "name": "Rotate a Linked List",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-15",
+          "name": "Add Two Numbers",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-16",
+          "name": "Reverse Nodes in k-Group",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-17",
+          "name": "Merge k Sorted Lists (Using Priority Queue)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-18",
+          "name": "Sort a Linked List (Merge Sort)",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-19",
+          "name": "Flatten Binary Tree to Linked List",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-20",
+          "name": "Convert Sorted List to Binary Search Tree",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "ll-21",
+          "name": "Copy List with Random Pointer (Hashing)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    }
+  },
+  "Stack & Queue": {
+    "Implementation & Basics": {
+      "problems": [
+        {
+          "id": "sq-01",
+          "name": "Implement Stack using Queues",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "sq-02",
+          "name": "Implement Queue using Stacks",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "sq-03",
+          "name": "Valid Parentheses",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "sq-04",
+          "name": "Min Stack (O(1) retrieval of minimum element)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Monotonic Stack Pattern": {
+      "problems": [
+        {
+          "id": "sq-05",
+          "name": "Next Greater Element I",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "sq-06",
+          "name": "Car Fleet",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "sq-07",
+          "name": "Largest Rectangle in Histogram",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Recursion & System Design": {
+      "problems": [
+        {
+          "id": "sq-08",
+          "name": "Reverse a stack without using extra space",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "sq-09",
+          "name": "LRU Cache",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    }
+  },
+  "Trees": {
+    "Structural Basics & Traversals": {
+      "problems": [
+        {
+          "id": "tr-01",
+          "name": "Inorder, Preorder, and Postorder Traversal (Recursive)",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-02",
+          "name": "Binary Tree Level Order Traversal (BFS)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-03",
+          "name": "Maximum Depth of Binary Tree",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-04",
+          "name": "Check if Two Trees are Identical or Not",
+          "priority": "Medium",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-05",
+          "name": "Invert Binary Tree",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-06",
+          "name": "Check for Balanced Binary Tree",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-07",
+          "name": "Symmetric Binary Tree / Check for Symmetrical BTs",
+          "priority": "Medium",
+          "difficulty": "Easy",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-08",
+          "name": "Pre, Post, and Inorder in One Traversal (Using a Stack)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-09",
+          "name": "Morris Inorder & Preorder Traversal",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Views & Boundary Traversals": {
+      "problems": [
+        {
+          "id": "tr-10",
+          "name": "Binary Tree Right/Left Side View",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-11",
+          "name": "Binary Tree Zigzag Level Order Traversal",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-12",
+          "name": "Top View / Bottom View of BT",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-13",
+          "name": "Binary Tree Vertical Order Traversal",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-14",
+          "name": "Boundary Traversal (Left boundary + Leaves + Right boundary)",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Ancestors, Paths & Distance": {
+      "problems": [
+        {
+          "id": "tr-15",
+          "name": "Lowest Common Ancestor of a Binary Tree (LCA)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-16",
+          "name": "Diameter of Binary Tree",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-17",
+          "name": "All Nodes Distance K in Binary Tree",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-18",
+          "name": "Count Good Nodes in Binary Tree",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-19",
+          "name": "Binary Tree Maximum Path Sum",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-20",
+          "name": "Lowest Common Ancestor of a Binary Tree III",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-21",
+          "name": "Children Sum Property in Binary Tree",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Construction & Conversion": {
+      "problems": [
+        {
+          "id": "tr-22",
+          "name": "Flatten Binary Tree to Linked List",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-23",
+          "name": "Construct Binary Tree from Preorder and Inorder Traversal",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-24",
+          "name": "Construct Binary Tree from Postorder and Inorder Traversal",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-25",
+          "name": "Serialize and Deserialize Binary Tree (String conversion)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Binary Search Tree (BST)": {
+      "problems": [
+        {
+          "id": "tr-26",
+          "name": "Validate Binary Search Tree",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-27",
+          "name": "Inorder Successor in BST",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-28",
+          "name": "Construct Binary Search Tree from Preorder Traversal",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-29",
+          "name": "Balance a Binary Search Tree",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "tr-30",
+          "name": "Distribute Elements Into Two Arrays II",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    }
+  },
+  "Graphs": {
+    "Traversal & Connectivity": {
+      "problems": [
+        {
+          "id": "gr-01",
+          "name": "BFS / DFS Traversal Techniques",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-02",
+          "name": "Clone Graph (Deep copy using Hashmap)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-03",
+          "name": "Number of Provinces (Connected Components)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-04",
+          "name": "Number of Islands (Grid-based DFS/BFS)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-05",
+          "name": "All Paths From Source to Target",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-06",
+          "name": "Number of Ways to Arrive at Destination",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Cycle Detection": {
+      "problems": [
+        {
+          "id": "gr-07",
+          "name": "Detect Cycle in Undirected Graph (BFS/DFS)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-08",
+          "name": "Detect Cycle in Directed Graph (DFS/BFS - Kahn's variation)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-09",
+          "name": "Is Graph Bipartite? (Check using BFS/DFS)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-10",
+          "name": "Possible Bipartition",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Topological Sorting": {
+      "problems": [
+        {
+          "id": "gr-11",
+          "name": "Topological Sort (Kahn's BFS / DFS approach)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-12",
+          "name": "Course Schedule I & II",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-13",
+          "name": "Course Schedule IV",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Shortest Paths & Weighted Graphs": {
+      "problems": [
+        {
+          "id": "gr-14",
+          "name": "Network Delay Time (Dijkstra)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-15",
+          "name": "Path With Minimum Effort",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-16",
+          "name": "Path with Maximum Probability",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-17",
+          "name": "Evaluate Division (Graph + DFS/BFS)",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-18",
+          "name": "Find the City With the Smallest Number of Neighbors at a Threshold Distance",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-19",
+          "name": "Minimum Path Cost in a Hidden Grid",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-20",
+          "name": "Detonate the Maximum Bombs",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "MST, DSU & Advanced Connectivity": {
+      "problems": [
+        {
+          "id": "gr-21",
+          "name": "Regions Cut By Slashes (Union-Find)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-22",
+          "name": "Min Cost to Connect All Points (Prim's or Kruskal's MST)",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-23",
+          "name": "Critical Connections in a Network (Tarjan's Bridge Finding Algorithm)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-24",
+          "name": "Remove Max Number of Edges to Keep Graph Fully Traversable",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "gr-25",
+          "name": "Find Minimum Diameter After Merging Two Trees",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    }
+  },
+  "Dynamic Programming": {
+    "1D DP & Linear Sequences": {
+      "problems": [
+        {
+          "id": "dp-01",
+          "name": "Climbing Stairs / Ways to Cover a Distance",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "dp-02",
+          "name": "Longest Increasing Subsequence (LIS)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "dp-03",
+          "name": "Maximum Profit in Job Scheduling (LIS + Binary Search)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "2D Grid DP": {
+      "problems": [
+        {
+          "id": "dp-04",
+          "name": "Minimum Sum Path in a Matrix",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "dp-05",
+          "name": "Grid Unique Paths",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "dp-06",
+          "name": "Longest Path in a Matrix",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Knapsack & Partition Patterns": {
+      "problems": [
+        {
+          "id": "dp-07",
+          "name": "0/1 Knapsack Problem",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "dp-08",
+          "name": "Subset Sum Equals Target",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "dp-09",
+          "name": "Minimum Partition (Minimum Subset Sum Difference)",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "String Matching & LCS Patterns": {
+      "problems": [
+        {
+          "id": "dp-10",
+          "name": "Longest Common Subsequence (LCS)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "dp-11",
+          "name": "Edit Distance",
+          "priority": "High",
+          "difficulty": "Hard",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "dp-12",
+          "name": "String Interleaving",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Unbounded Knapsack & Math": {
+      "problems": [
+        {
+          "id": "dp-13",
+          "name": "Coin Change Problem",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Matrix Chain Multiplication": {
+      "problems": [
+        {
+          "id": "dp-14",
+          "name": "Matrix Chain Multiplication (MCM)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "dp-15",
+          "name": "Palindrome Partitioning (MCM Variation)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "dp-16",
+          "name": "Boolean Parenthesization Problem",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Game Theory & State Machine": {
+      "problems": [
+        {
+          "id": "dp-17",
+          "name": "Buy and Sell Stock with Transaction Fee / Cooldown",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "dp-18",
+          "name": "Word Break Problem",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    }
+  },
+  "Recursion & Backtracking": {
+    "Subset & Combination Patterns": {
+      "problems": [
+        {
+          "id": "rb-01",
+          "name": "Subset Sums (Find all possible sums)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "rb-02",
+          "name": "Combination Sum (Infinite supply of elements)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "rb-03",
+          "name": "Subsets II (Handling duplicates)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "rb-04",
+          "name": "Combination Sum II (Using each element once + duplicates)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "rb-05",
+          "name": "Letter Combinations of a Phone Number",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "rb-06",
+          "name": "Generate Parentheses",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Permutation & Partitioning": {
+      "problems": [
+        {
+          "id": "rb-07",
+          "name": "Permutations of a String / Array",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "rb-08",
+          "name": "Palindrome Partitioning",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "rb-09",
+          "name": "Permutation Sequence",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Classical Backtracking": {
+      "problems": [
+        {
+          "id": "rb-10",
+          "name": "Word Search (Standard DFS on Grid)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "rb-11",
+          "name": "N-Queen / N-Queens II",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "rb-12",
+          "name": "Rat in a Maze",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "rb-13",
+          "name": "M Coloring Problem",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "rb-14",
+          "name": "Sudoku Solver",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "rb-15",
+          "name": "Word Search II",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "rb-16",
+          "name": "Word Break (Print all ways)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "rb-17",
+          "name": "Remove Invalid Parentheses",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    }
+  },
+  "Binary Search": {
+    "Standard Binary Search (Array & Matrix)": {
+      "problems": [
+        {
+          "id": "bs-01",
+          "name": "First Bad Version",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-02",
+          "name": "Find First and Last Position of Element in Sorted Array",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-03",
+          "name": "Search a 2D Matrix",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-04",
+          "name": "Search in Rotated Sorted Array",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-05",
+          "name": "Find Minimum in Rotated Sorted Array",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-06",
+          "name": "Single Element in a Sorted Array",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-07",
+          "name": "Find Peak Element",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-08",
+          "name": "Kth Smallest Element in a Sorted Matrix",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-09",
+          "name": "Matrix Median",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Binary Search on Minimum Maximum": {
+      "problems": [
+        {
+          "id": "bs-10",
+          "name": "Capacity To Ship Packages Within D Days",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-11",
+          "name": "Minimized Maximum of Products Distributed to Any Store",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-12",
+          "name": "Maximum Candies Allocated to K Children",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-13",
+          "name": "Allocate Minimum Number of Pages",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-14",
+          "name": "Aggressive Cows",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-15",
+          "name": "Smallest Substring With Identical Characters I & II",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Mathematical & Range Search": {
+      "problems": [
+        {
+          "id": "bs-16",
+          "name": "The N-th root of an integer",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-17",
+          "name": "Kth Smallest Number in Multiplication Table",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Two-Array & Partitioning Search": {
+      "problems": [
+        {
+          "id": "bs-18",
+          "name": "Kth element of 2 sorted arrays",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-19",
+          "name": "Median of 2 sorted arrays",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Advanced Meet-in-the-Middle / Partitioning": {
+      "problems": [
+        {
+          "id": "bs-20",
+          "name": "Closest Subsequence Sum",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bs-21",
+          "name": "Partition Array Into Two Arrays to Minimize Sum Difference",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    }
+  },
+  "Heap": {
+    "Foundations and Implementation": {
+      "problems": [
+        {
+          "id": "hp-01",
+          "name": "Implement Max Heap (Insert, Delete, Heapify)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "hp-02",
+          "name": "K-th Largest element in an array (Using a Min-Heap)",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "hp-03",
+          "name": "Kth Largest Element in a Stream",
+          "priority": "Medium",
+          "difficulty": "Easy",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Multi-List & Array Merging": {
+      "problems": [
+        {
+          "id": "hp-04",
+          "name": "Merge K Sorted Arrays",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "hp-05",
+          "name": "Merge k Sorted Lists",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "hp-06",
+          "name": "Maximum Sum Combination",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Specialized Heaps & Streams": {
+      "problems": [
+        {
+          "id": "hp-07",
+          "name": "Top K Frequent Elements",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "hp-08",
+          "name": "Find Median from Data Stream (Two-Heap Method)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "hp-09",
+          "name": "Zero Array Transformation III",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    }
+  },
+  "Trie": {
+    "Trie Foundations": {
+      "problems": [
+        {
+          "id": "trie-01",
+          "name": "Implement Trie (Prefix Tree)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "trie-02",
+          "name": "Implement Trie II",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "trie-03",
+          "name": "Power Set",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "trie-04",
+          "name": "Find the Length of the Longest Common Prefix",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "String Search & Pattern Matching": {
+      "problems": [
+        {
+          "id": "trie-05",
+          "name": "Design Add and Search Words Data Structure",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "trie-06",
+          "name": "Search Suggestions System (Trie + Sorting/Top-K)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "trie-07",
+          "name": "Longest Word with All Prefixes",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "trie-08",
+          "name": "Longest Common Suffix Queries",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "trie-09",
+          "name": "Word Break II",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "trie-10",
+          "name": "Number of Distinct Substrings in a String",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Advanced XOR & Bitwise Tries": {
+      "problems": [
+        {
+          "id": "trie-11",
+          "name": "Maximum XOR of Two Numbers in an Array",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "trie-12",
+          "name": "Maximum XOR with an Element from an Array (Offline Queries + Trie)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "trie-13",
+          "name": "Count Prefix and Suffix Pairs II (Advanced String Hashing/Trie)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    }
+  },
+  "Bit Manipulation": {
+    "Basic Bitwise Logic": {
+      "problems": [
+        {
+          "id": "bm-01",
+          "name": "Hamming Distance",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bm-02",
+          "name": "Single Number",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bm-03",
+          "name": "Counting Bits",
+          "priority": "Medium",
+          "difficulty": "Easy",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bm-04",
+          "name": "Majority Element",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Specialized Bit Tricks": {
+      "problems": [
+        {
+          "id": "bm-05",
+          "name": "Single Number II",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bm-06",
+          "name": "Bitwise AND of Numbers Range",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "bm-07",
+          "name": "Decode XORed Permutation",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Bit masking & Windows": {
+      "problems": [
+        {
+          "id": "bm-08",
+          "name": "Longest Nice Subarray",
+          "priority": "Low",
+          "difficulty": "Medium",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    }
+  },
+  "Number Theory": {
+    "Prime Numbers & Number Theory": {
+      "problems": [
+        {
+          "id": "nt-01",
+          "name": "Given a number find if it's prime",
+          "priority": "High",
+          "difficulty": "Easy",
+          "lpa": "entry",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "nt-02",
+          "name": "Count Primes (Sieve of Eratosthenes)",
+          "priority": "High",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "nt-03",
+          "name": "Prime Palindrome",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "nt-04",
+          "name": "Distinct Prime Factors of Product of Array",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "nt-05",
+          "name": "Prime Arrangements (Requires Factorials + Sieve)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Combinatorics & Counting": {
+      "problems": [
+        {
+          "id": "nt-06",
+          "name": "Calculate NCR value for given N and R",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "nt-07",
+          "name": "Unique Binary Search Trees (Catalan Numbers)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "nt-08",
+          "name": "Count Number of Balanced Permutations",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        },
+        {
+          "id": "nt-09",
+          "name": "Count Anagrams (Permutations with repetitions)",
+          "priority": "Low",
+          "difficulty": "Hard",
+          "lpa": "senior",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    },
+    "Exponential & Large Numbers": {
+      "problems": [
+        {
+          "id": "nt-10",
+          "name": "Pow(x, n) (Binary Exponentiation)",
+          "priority": "Medium",
+          "difficulty": "Medium",
+          "lpa": "mid",
+          "link": "",
+          "fullContent": false
+        }
+      ]
+    }
+  }
+}
