@@ -12,12 +12,14 @@ import {
   IndianRupee,
   Link2Off,
   LockKeyhole,
+  Moon,
   Star,
+  Sun,
   X,
 } from "lucide-react";
 
-const lpaLabel = { entry: "<6 LPA", mid: "<15 LPA", senior: "<20 LPA+" };
-const lpaClass = { entry: "lpa-entry", mid: "lpa-mid", senior: "lpa-senior" };
+const lpaLabel = { "4-8 LPA": "4-8", "8-12 LPA": "8-12", "12-18 LPA": "12-18" };
+const lpaClass = { "4-8 LPA": "lpa-entry", "8-12 LPA": "lpa-mid", "12-18 LPA": "lpa-senior" };
 const priorityClass = {
   High: "priority-high",
   Medium: "priority-medium",
@@ -31,9 +33,9 @@ const diffClass = {
 const filterOptions = {
   difficulty: ["Easy", "Medium", "Hard"],
   priority: ["High", "Medium", "Low"],
-  lpa: ["entry", "mid", "senior"],
+  lpa: ["4-8 LPA", "8-12 LPA", "12-18 LPA"],
 };
-const lpaFilterLabel = { entry: "<6", mid: "<15", senior: "20+" };
+const lpaFilterLabel = { "4-8 LPA": "4-8", "8-12 LPA": "8-12", "12-18 LPA": "12-18" };
 const STORAGE_KEY = "towardsoffer_dsa_v2";
 const ACCESS_KEY = "towardsoffer_access_tier";
 
@@ -100,10 +102,11 @@ function getTopicAccessTier(topic, accessTier) {
 }
 
 function canViewProblemName(problem, accessTier) {
-  return accessTier !== "free" || problem.lpa === "entry";
+  return accessTier !== "free" || problem.lpa_zone === "4-8 LPA";
 }
 
 function getTotalProblems(topicData) {
+  if (!topicData) return 0;
   return Object.values(topicData).reduce(
     (sum, subtopic) => sum + subtopic.problems.length,
     0,
@@ -133,9 +136,13 @@ function getProgressMessage(progress) {
 };
 
 function getCompletedProblems(topicData, state) {
+  if (!topicData || !state) return 0;
+  
   return Object.values(topicData).reduce(
-    (sum, subtopic) =>
-      sum + subtopic.problems.filter((problem) => state[problem.id]).length,
+    (sum, subtopic) => {
+      if (!subtopic || !subtopic.problems || !Array.isArray(subtopic.problems)) return sum;
+      return sum + subtopic.problems.filter((problem) => state[problem.id]).length;
+    },
     0,
   );
 }
@@ -241,7 +248,8 @@ function FilterGroup({ title, options, selected, labels, onToggle }) {
 }
 
 export default function Home() {
-  const [dsaData, setDsaData] = useState(null);
+  const [topics, setTopics] = useState([]);
+  const [loadedTopicData, setLoadedTopicData] = useState({});
   const [loadError, setLoadError] = useState("");
   const [currentTopic, setCurrentTopic] = useState("");
   const [openSubtopic, setOpenSubtopic] = useState(null);
@@ -252,6 +260,14 @@ export default function Home() {
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [paymentTargetTier, setPaymentTargetTier] = useState("pro");
   const [user, setUser] = useState(null);
+  const [theme, setTheme] = useState("light");
+
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+  };
+
   const [filters, setFilters] = useState({
     difficulty: filterOptions.difficulty,
     priority: filterOptions.priority,
@@ -261,15 +277,28 @@ export default function Home() {
   useEffect(() => {
     setProgressState(loadStoredState());
     setAccessTier(loadAccessTier());
+    
+    // Load theme from localStorage
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      setTheme(savedTheme);
+    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      setTheme("dark");
+    }
 
-    fetch("/problems.json")
+    // Load topics list
+    fetch("/api/topics")
       .then((response) => {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         return response.json();
       })
       .then((data) => {
-        setDsaData(data);
-        setCurrentTopic(Object.keys(data)[0]);
+        setTopics(data);
+        if (data.length > 0) {
+          setCurrentTopic(data[0]);
+          // Load first topic's data
+          loadTopicData(data[0]);
+        }
       })
       .catch((error) => setLoadError(error.message));
 
@@ -280,13 +309,13 @@ export default function Home() {
   }, []);
 
   const problemIndex = useMemo(
-    () => (dsaData ? buildProblemIndex(dsaData) : {}),
-    [dsaData],
+    () => (loadedTopicData ? buildProblemIndex(loadedTopicData) : {}),
+    [loadedTopicData],
   );
-  const topicData = dsaData && currentTopic ? dsaData[currentTopic] : null;
-  const totalProblems = topicData ? getTotalProblems(topicData) : 0;
-  const completedProblems = topicData
-    ? getCompletedProblems(topicData, progressState)
+  const currentTopicData = currentTopic ? loadedTopicData[currentTopic] : null;
+  const totalProblems = currentTopicData ? getTotalProblems(currentTopicData) : 0;
+  const completedProblems = currentTopicData
+    ? getCompletedProblems(currentTopicData, progressState)
     : 0;
   const progress = totalProblems
     ? Math.round((completedProblems / totalProblems) * 100)
@@ -302,6 +331,27 @@ export default function Home() {
     setCurrentTopic(topic);
     setOpenSubtopic(null);
     setOpenProblem(null);
+    setOpenLearningAid({});
+    
+    // Load topic data if not already loaded
+    if (!loadedTopicData[topic]) {
+      loadTopicData(topic);
+    }
+  }
+
+  function loadTopicData(topic) {
+    fetch(`/api/topics/${encodeURIComponent(topic)}`)
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      })
+      .then((data) => {
+        setLoadedTopicData(prev => ({
+          ...prev,
+          [topic]: data
+        }));
+      })
+      .catch((error) => setLoadError(error.message));
   }
 
   function toggleSubtopic(subtopicId) {
@@ -364,7 +414,7 @@ export default function Home() {
     return (
       filters.difficulty.includes(problem.difficulty) &&
       filters.priority.includes(problem.priority) &&
-      filters.lpa.includes(problem.lpa)
+      filters.lpa.includes(problem.lpa_zone)
     );
   }
 
@@ -382,9 +432,9 @@ export default function Home() {
 
   function findProblemName(problemId) {
     const ref = problemIndex[problemId];
-    if (!ref || !dsaData) return problemId;
+    if (!ref || !loadedTopicData) return problemId;
     return (
-      dsaData[ref.topic][ref.subtopic].problems.find(
+      loadedTopicData[ref.topic][ref.subtopic].problems.find(
         (problem) => problem.id === problemId,
       )?.name || problemId
     );
@@ -412,24 +462,67 @@ export default function Home() {
     return (
       <main className="center-pane">
         <div className="error-panel">
-          Failed to load problems.json: {loadError}
+          Failed to load problem data: {loadError}
           <br />
-          Make sure problems.json is available in the public folder.
+          Please check your connection and try again.
         </div>
       </main>
     );
   }
 
-  if (!dsaData || !topicData) {
+  if (!topics.length || !currentTopicData) {
     return (
-      <main className="center-pane">
-        <p className="loading-text">Loading problems...</p>
-      </main>
+      <div className={`shell ${theme}`}>
+        <header className="topbar">
+          <div className="topbar-inner">
+            <div className="brand-area">
+              <div className="brand-mark" aria-hidden="true">
+                <CheckCircle2 size={18} strokeWidth={2.6} />
+              </div>
+              <div>
+                <h1>TowardsOffer</h1>
+                <p>Minimal DSA practice sheet</p>
+              </div>
+            </div>
+            <div className="header-actions">
+              <button
+                className="theme-toggle"
+                type="button"
+                onClick={toggleTheme}
+                aria-label="Toggle theme"
+              >
+                {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+              </button>
+            </div>
+          </div>
+        </header>
+        <div className="layout">
+          <aside className="topic-sidebar col-span-2">
+            <div className="sidebar-title shimmer shimmer-header"></div>
+            <nav className="topic-nav">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="shimmer shimmer-item shimmer-sidebar-item"></div>
+              ))}
+            </nav>
+          </aside>
+          <main className="main-pane col-span-6">
+            <div className="mobile-selectors">
+              <div className="shimmer shimmer-item shimmer-header"></div>
+              <div className="shimmer shimmer-item shimmer-header"></div>
+            </div>
+            <div className="subtopic-nav">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="shimmer shimmer-item shimmer-subtopic-item"></div>
+              ))}
+            </div>
+          </main>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="shell">
+    <div className={`shell ${theme}`}>
       <header className="topbar">
         <div className="topbar-inner">
           <div className="brand-area">
@@ -443,6 +536,14 @@ export default function Home() {
           </div>
 
           <div className="header-actions">
+            <button
+              className="theme-toggle"
+              type="button"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+            >
+              {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+            </button>
             {user ? (
               <div className="user-chip" title={user.email}>
                 {user.picture ? (
@@ -460,25 +561,34 @@ export default function Home() {
             <div className={`access-chip access-${accessTier}`}>
               {selectedAccessPlan.name}
             </div>
-            <div className="progress-chip">{getProgressMessage(progress)}</div>
-            <button
-              className="upgrade-button"
-              type="button"
-              onClick={() => openSubscriptionPopup(accessTier)}
-            >
-              <CreditCard size={16} />
-              Subscriptions
-            </button>
+            {user && (
+              <button
+                className="upgrade-button"
+                type="button"
+                onClick={() => openSubscriptionPopup(accessTier)}
+              >
+                <CreditCard size={16} />
+                Subscriptions
+              </button>
+            )}
           </div>
         </div>
       </header>
 
       <div className="layout">
-        <aside className="sidebar">
-          <div className="sidebar-column topic-column">
-            <div className="sidebar-title">Topics</div>
-            <nav className="topic-nav" aria-label="Topics">
-              {Object.keys(dsaData).map((topic) => (
+        <aside className="topic-sidebar col-span-2">
+          <div className="sidebar-title">Topics</div>
+          <nav className="topic-nav" aria-label="Topics">
+            {topics.map((topic) => {
+              const topicProgress = getCompletedProblems(
+                loadedTopicData[topic],
+                progressState,
+              );
+              const topicTotal = getTotalProblems(loadedTopicData[topic]);
+              const progressPercent = topicTotal > 0 ? Math.round((topicProgress / topicTotal) * 100) : 0;
+              const isComplete = progressPercent === 100;
+
+              return (
                 <button
                   type="button"
                   className={`sidebar-item ${topic === currentTopic ? "active" : ""}`}
@@ -486,55 +596,97 @@ export default function Home() {
                   key={topic}
                 >
                   <span>{topic}</span>
-                  <strong>{getTotalProblems(dsaData[topic])}</strong>
+                  <svg className="topic-progress-circle" width="20" height="20" viewBox="0 0 20 20">
+                    {isComplete ? (
+                      <>
+                        <circle
+                          cx="10"
+                          cy="10"
+                          r="8"
+                          fill="var(--brand)"
+                        />
+                        <path
+                          d="M6 10 L9 13 L14 7"
+                          stroke="white"
+                          strokeWidth="2"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <circle
+                          cx="10"
+                          cy="10"
+                          r="8"
+                          fill="none"
+                          stroke="rgba(37, 99, 235, 0.2)"
+                          strokeWidth="2"
+                        />
+                        <circle
+                          cx="10"
+                          cy="10"
+                          r="8"
+                          fill="none"
+                          stroke="var(--brand)"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeDasharray={2 * Math.PI * 8}
+                          strokeDashoffset={2 * Math.PI * 8 - (progressPercent / 100) * 2 * Math.PI * 8}
+                          transform="rotate(-90 10 10)"
+                        />
+                      </>
+                    )}
+                  </svg>
                 </button>
-              ))}
-            </nav>
-          </div>
+              );
+            })}
+          </nav>
+        </aside>
 
-          <div className="sidebar-column subtopic-column">
-            <div className="sidebar-title">
-              <span>Subtopics</span>
-              <small>{currentTopic}</small>
-            </div>
-            <AnimatePresence mode="wait">
-              <motion.nav
-                className="subtopic-nav"
-                aria-label={`${currentTopic} subtopics`}
-                key={currentTopic}
-                initial={{ opacity: 0, x: 18 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -14 }}
-                transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              >
-                {Object.keys(topicData).map((subtopicName, subtopicIndex) => {
-                  const subtopic = topicData[subtopicName];
-                  const subtopicId = `subtopic-${sanitizeId(currentTopic)}-${subtopicIndex}`;
-
-                  return (
-                    <motion.button
-                      type="button"
-                      className={`subtopic-item ${openSubtopic === subtopicId ? "active" : ""}`}
-                      key={subtopicId}
-                      onClick={() =>
-                        openAndScrollSubtopic(currentTopic, subtopicId)
-                      }
-                      whileHover={{ x: 4 }}
-                      whileTap={{ scale: 0.98 }}
-                      transition={{ duration: 0.16 }}
-                    >
-                      <span>{subtopicName}</span>
-                      <strong>{subtopic.problems.length}</strong>
-                    </motion.button>
-                  );
-                })}
-              </motion.nav>
-            </AnimatePresence>
+        <aside className="subtopic-sidebar col-span-2">
+          <div className="sidebar-title">
+            <span>Subtopics</span>
+            <small>{currentTopic}</small>
           </div>
+          <AnimatePresence mode="wait">
+            <motion.nav
+              className="subtopic-nav"
+              aria-label={`${currentTopic} subtopics`}
+              key={currentTopic}
+              initial={{ opacity: 0, x: 18 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -14 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {Object.keys(currentTopicData).map((subtopicName, subtopicIndex) => {
+                const subtopic = currentTopicData[subtopicName];
+                const subtopicId = `subtopic-${sanitizeId(currentTopic)}-${subtopicIndex}`;
+
+                return (
+                  <motion.button
+                    type="button"
+                    className={`subtopic-item ${openSubtopic === subtopicId ? "active" : ""}`}
+                    key={subtopicId}
+                    onClick={() =>
+                      openAndScrollSubtopic(currentTopic, subtopicId)
+                    }
+                    whileHover={{ x: 4 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.16 }}
+                  >
+                    <span>{subtopicName}</span>
+                    <strong>{subtopic.problems.length}</strong>
+                  </motion.button>
+                );
+              })}
+            </motion.nav>
+          </AnimatePresence>
         </aside>
 
         <motion.main
-          className="main-pane"
+          className="main-pane col-span-6"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.28 }}
@@ -545,7 +697,7 @@ export default function Home() {
               onChange={(event) => selectTopic(event.target.value)}
               aria-label="Select topic"
             >
-              {Object.keys(dsaData).map((topic) => (
+              {topics.map((topic) => (
                 <option value={topic} key={topic}>
                   {topic}
                 </option>
@@ -560,32 +712,20 @@ export default function Home() {
               aria-label="Select subtopic"
             >
               <option value="">Select subtopic</option>
-              {Object.keys(topicData).map((subtopicName, subtopicIndex) => {
+              {Object.keys(currentTopicData).map((subtopicName, subtopicIndex) => {
                 const subtopicId = `subtopic-${sanitizeId(currentTopic)}-${subtopicIndex}`;
                 return (
                   <option value={subtopicId} key={subtopicId}>
-                    {subtopicName} ({topicData[subtopicName].problems.length})
+                    {subtopicName} ({currentTopicData[subtopicName].problems.length})
                   </option>
                 );
               })}
             </select>
           </div>
 
-          <section className="topic-hero">
-            <div>
-              <p className="eyebrow">Current Topic</p>
-              <h2>{currentTopic}</h2>
-            </div>
-
-            <ProgressDonut
-              completed={completedProblems}
-              total={totalProblems}
-            />
-          </section>
-
           <motion.section className="subtopic-list" layout>
-            {Object.keys(topicData).map((subtopicName, subtopicIndex) => {
-              const subtopic = topicData[subtopicName];
+            {Object.keys(currentTopicData).map((subtopicName, subtopicIndex) => {
+              const subtopic = currentTopicData[subtopicName];
               const subtopicId = `subtopic-${sanitizeId(currentTopic)}-${subtopicIndex}`;
               const completed = getCompletedProblems(
                 { [subtopicName]: subtopic },
@@ -593,6 +733,14 @@ export default function Home() {
               );
               const learningAidId = `learn-${subtopicId}`;
               const isSubtopicOpen = openSubtopic === subtopicId;
+
+              // Only show if this is the selected subtopic or if no subtopic is selected
+              if (openSubtopic && openSubtopic !== subtopicId) {
+                return null;
+              }
+
+              // Always show accordion content when subtopic is selected from sidebar
+              const shouldShowContent = openSubtopic ? true : isSubtopicOpen;
 
               return (
                 <motion.article
@@ -629,7 +777,7 @@ export default function Home() {
                   </button>
 
                   <div
-                    className={`accordion-content ${isSubtopicOpen ? "open" : ""}`}
+                    className={`accordion-content ${shouldShowContent ? "open" : ""}`}
                     id={subtopicId}
                   >
                     {subtopic.learningAid && hasAlgorithmAccess && (
@@ -704,6 +852,7 @@ export default function Home() {
                             <th scope="col">Problem</th>
                             <th scope="col">Priority</th>
                             <th scope="col">Difficulty</th>
+                            <th scope="col">Interview Freq</th>
                             <th scope="col">Practice</th>
                           </tr>
                         </thead>
@@ -723,84 +872,60 @@ export default function Home() {
                             const detailLocked = !hasFullAccess;
 
                             return (
-                              <Fragment key={problem.id}>
-                                <tr
-                                  className={`problem-row ${isChecked ? "completed" : ""} ${rowLocked || detailLocked ? "premium-row" : ""}`}
-                                  id={`wrap-${problem.id}`}
-                                  onClick={() => {
-                                    if (rowLocked || detailLocked) {
-                                      openSubscriptionPopup(
-                                        rowLocked ? "starter" : "pro",
-                                      );
-                                      return;
-                                    }
-                                    toggleProblem(problemId);
-                                  }}
-                                >
-                                  <td data-label="Status">
-                                    <div className="problem-controls">
-                                      <button
-                                        type="button"
-                                        className="icon-button"
-                                        aria-label="Toggle problem details"
-                                        disabled={rowLocked || detailLocked}
-                                        onClick={(event) => {
-                                          event.stopPropagation();
-                                          if (rowLocked || detailLocked) {
-                                            openSubscriptionPopup(
-                                              rowLocked ? "starter" : "pro",
-                                            );
-                                            return;
-                                          }
-                                          toggleProblem(problemId);
-                                        }}
-                                      >
-                                        <ChevronDown
-                                          className={
-                                            isProblemOpen ? "rotated" : ""
-                                          }
-                                          size={17}
-                                        />
-                                      </button>
-                                      <input
-                                        type="checkbox"
-                                        checked={isChecked}
-                                        disabled={!canTrackProblem}
-                                        onChange={() =>
-                                          toggleCheckbox(problem.id)
-                                        }
-                                        onClick={(event) => {
-                                          event.stopPropagation();
-                                          if (!canTrackProblem)
-                                            openSubscriptionPopup("pro");
-                                        }}
-                                        aria-label={`Mark ${problem.name} as completed`}
-                                      />
-                                    </div>
-                                  </td>
-                                  <td data-label="LPA">
-                                    <span
-                                      className={
-                                        rowLocked ? "blurred-inline" : ""
+                              <tr
+                                className={`problem-row ${isChecked ? "completed" : ""} ${rowLocked || detailLocked ? "premium-row" : ""}`}
+                                id={`wrap-${problem.id}`}
+                              >
+                                <td data-label="Status">
+                                  <div className="problem-controls">
+                                    <input
+                                      type="checkbox"
+                                      checked={isChecked}
+                                      disabled={!canTrackProblem}
+                                      onChange={() =>
+                                        toggleCheckbox(problem.id)
                                       }
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        if (!canTrackProblem)
+                                          openSubscriptionPopup("pro");
+                                      }}
+                                      aria-label={`Mark ${problem.name} as completed`}
+                                    />
+                                  </div>
+                                </td>
+                                <td data-label="LPA">
+                                  <span
+                                    className={
+                                      rowLocked ? "blurred-inline" : ""
+                                    }
+                                  >
+                                    <Pill
+                                      className={`compact-pill ${lpaClass[problem.lpa_zone]}`}
                                     >
-                                      <Pill
-                                        className={`compact-pill ${lpaClass[problem.lpa]}`}
-                                      >
-                                        {lpaLabel[problem.lpa].replace(
-                                          " LPA",
-                                          "",
-                                        )}
-                                      </Pill>
-                                    </span>
-                                  </td>
-                                  <td data-label="Problem">
-                                    <p
-                                      className={`problem-name ${rowLocked ? "premium-blur" : ""}`}
-                                    >
-                                      {problem.name}
-                                    </p>
-                                  </td>
+                                      {lpaLabel[problem.lpa_zone].replace(
+                                        " LPA",
+                                        "",
+                                      )}
+                                    </Pill>
+                                  </span>
+                                </td>
+                                <td data-label="Problem">
+                                  <a
+                                    className={`problem-name ${rowLocked ? "premium-blur" : ""}`}
+                                    href={`/problem/${problem.id}`}
+                                    onClick={(event) => {
+                                      if (rowLocked || detailLocked) {
+                                        event.preventDefault();
+                                        openSubscriptionPopup(
+                                          rowLocked ? "starter" : "pro",
+                                        );
+                                      }
+                                    }}
+                                  >
+                                    {problem.name}
+                                  </a>
+                                </td>
                                   <td data-label="Priority">
                                     {hasFullAccess ? (
                                       <StarBadge
@@ -832,11 +957,22 @@ export default function Home() {
                                       </span>
                                     )}
                                   </td>
+                                  <td data-label="Interview Freq">
+                                    {hasFullAccess ? (
+                                      <span className="freq-badge">
+                                        {problem.interview_frequency}
+                                      </span>
+                                    ) : (
+                                      <span className="muted-table-text">
+                                        —
+                                      </span>
+                                    )}
+                                  </td>
                                   <td data-label="Practice">
-                                    {hasFullAccess && problem.link ? (
+                                    {hasFullAccess && problem.practice_link ? (
                                       <a
                                         className="practice-link icon-action"
-                                        href={problem.link}
+                                        href={problem.practice_link}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         title="Open practice problem"
@@ -876,39 +1012,6 @@ export default function Home() {
                                     )}
                                   </td>
                                 </tr>
-
-                                <tr
-                                  className={`problem-detail-row ${isProblemOpen && hasFullAccess ? "open" : ""}`}
-                                >
-                                  <td colSpan={6}>
-                                    <div
-                                      className={`accordion-content ${isProblemOpen && hasFullAccess ? "open" : ""}`}
-                                    >
-                                      <div className="problem-detail">
-                                        {hasFullAccess &&
-                                        problem.fullContent &&
-                                        problem.content ? (
-                                          <ProblemContent
-                                            content={problem.content}
-                                            findProblemName={findProblemName}
-                                            navigateToProblem={
-                                              navigateToProblem
-                                            }
-                                          />
-                                        ) : (
-                                          <LockedPanel
-                                            title="Details locked"
-                                            message="Upgrade to Tier 3 to unlock tags, hints, common mistakes, follow-ups, and practice links."
-                                            onUpgrade={() =>
-                                              openSubscriptionPopup("pro")
-                                            }
-                                          />
-                                        )}
-                                      </div>
-                                    </div>
-                                  </td>
-                                </tr>
-                              </Fragment>
                             );
                           })}
                         </tbody>

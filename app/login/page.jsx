@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 
@@ -6,10 +8,6 @@ const errorMessages = {
   google_env: "Google credentials are missing in .env.",
   google_token: "Google could not create a token. Check your redirect URL and credentials.",
   google_user: "Google sign-in worked, but the profile could not be loaded.",
-};
-
-export const metadata = {
-  title: "Sign in - TowardsOffer",
 };
 
 export default function LoginPage({ searchParams }) {
